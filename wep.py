@@ -21,7 +21,7 @@ text = text + "여기에서 어떤정책인지, 지원 대상, 조건, 필요한
 # 4. 추출한 텍스트 활용
 print(text)
 
-api_key = "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" #gpt api키 쓸때마다 돈듬...
+api_key = "api" #gpt api키 쓸때마다 돈듬...
 question = text
 
 response = openai.Completion.create(
