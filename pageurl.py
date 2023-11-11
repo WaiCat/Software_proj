@@ -13,13 +13,13 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--no-sandbox')  # 특정 환경에서 필요한 경우
 
 # Chrome 드라이버 경로 설정 (본인의 환경에 맞게 수정)
-chrome_driver_path = '/path/to/chromedriver'
+chrome_driver_path = r'C:/Users/Administrator/Downloads/chromedriver.exe'
 
-# 웹 드라이버 생성
-driver = webdriver.Chrome(executable_path=chrome_driver_path)
+# ChromeOptions를 사용하여 WebDriver 인스턴스 생성
+driver = webdriver.Chrome(options=chrome_options)
 
 # 페이지 로드 대기 시간 (초)
-wait_time = 10
+wait_time = 10 
 wait = WebDriverWait(driver, wait_time)
 
 # 페이지를 열고 JavaScript 함수 실행
