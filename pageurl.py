@@ -1,102 +1,110 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
+# Chrome 브라우저를 실행
+driver = webdriver.Chrome()
 
-base_url = 'https://young.busan.go.kr/policySupport/list.nm?menuCd=12&page={}'
+# 웹페이지 열기
+driver.get("https://young.busan.go.kr/policySupport/list.nm?menuCd=12")
 
-# ChromeOptions를 사용하여 실행 경로 설정
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--no-sandbox')  # 특정 환경에서 필요한 경우
+# 시작 페이지
+current_page = 0
 
-# Chrome 드라이버 경로 설정 (본인의 환경에 맞게 수정)
-chrome_driver_path = r'C:/Users/Administrator/Downloads/chromedriver.exe'
+while True:
+    # 실행할 자바스크립트 함수 호출
+    javascript_code = f"fn_page({current_page});"
 
-# ChromeOptions를 사용하여 WebDriver 인스턴스 생성
-driver = webdriver.Chrome(options=chrome_options)
+    # 자바스크립트 코드 실행
+    driver.execute_script(javascript_code)
 
-# 페이지 로드 대기 시간 (초)
-wait_time = 10 
-wait = WebDriverWait(driver, wait_time)
+    # 브라우저 창을 열어둘 시간을 주기 위해 대기 (여기서는 5초로 설정)
+    driver.implicitly_wait(5)
 
-# 페이지를 열고 JavaScript 함수 실행
-page_number = 2
-url = "https://young.busan.go.kr/policySupport/list.nm?menuCd=12"
-driver.get(url)
+    # 현재 페이지 소스 가져오기
+    page_source = driver.page_source
 
-# JavaScript 함수 실행
-javascript_function = f"fn_page({page_number})"
-driver.execute_script(javascript_function)
+    # BeautifulSoup를 사용하여 HTML 파싱
+    soup = BeautifulSoup(page_source, 'html.parser')
 
-# 페이지가 로드될 때까지 대기
-try:
-    element_present = EC.presence_of_element_located((By.ID, '여러분이 기다리는 요소의 ID'))
-    wait.until(element_present)
-except TimeoutException:
-    print("타임아웃: 페이지가 로드되지 않았습니다.")
+    # 페이지 처리 코드
+    specific_div = soup.find('div', class_='photo_type2')
 
+    if specific_div:
+        ul_element = specific_div.find('ul')
+        base_url = 'https://young.busan.go.kr/'
 
-        
-# def get_page_url(page_number):
-#     return base_url.format(page_number)
+        if ul_element:
+            li_elements = ul_element.find_all('li')
 
-# # 시작 페이지
-# current_page = 1
+            for li in li_elements:
+                # 웹 페이지 내용 파싱
+                spt_state_element = li.find('div', class_='spt_state end')
 
-# while True:
-#     # 현재 페이지에 해당하는 URL 생성
-#     url = get_page_url(current_page)
+                if spt_state_element is None:
+                    div = li.find('div', class_='photo2_tit')
+                    link = div.find('a')
+                    href = link.get('href')
 
-#     # 웹 페이지의 내용을 가져오기
-#     response = requests.get(url)
+                    # 정규표현식을 사용하여 href에서 숫자 추출
+                    page_number_match = re.search(r'\((\d+)\)', href)
+                    if page_number_match:
+                        page_number = int(page_number_match.group(1))
 
-#     # HTTP 요청이 성공한 경우
-#     if response.status_code == 200:
-#         # BeautifulSoup를 사용하여 HTML 파싱
-#         soup = BeautifulSoup(response.text, 'html.parser')
+                        # current_page와 추출한 페이지 번호 비교
+                        if current_page == page_number:
+                            print(f"현재 페이지: {current_page}, href의 페이지 번호: {page_number}")
+                        elif current_page > page_number:
+                            print(f"현재 페이지({current_page})가 href의 페이지 번호({page_number})보다 큽니다. 종료합니다.")
+                            driver.quit()
+                            exit()
 
-#         # 페이지 처리 코드
+                    href = base_url + href[1:]
 
-#         # <div> 요소 중 class가 "photo_type2"인 것을 찾기
-#         specific_div = soup.find('div', class_='photo_type2')
+                    print(href)
 
-#         if specific_div:
-#             # <li> 요소 내부의 <ul> 요소 찾기
-#             ul_element = specific_div.find('ul')
-#             ur = 'https://young.busan.go.kr/'
+                    response2 = requests.get(href)  # URL 요청
 
-#             if ul_element:
-#                 # <li> 요소들을 모두 찾기
-#                 li_elements = ul_element.find_all('li')
+                    # # 웹 페이지 내용 파싱
+                    # soup2 = BeautifulSoup(response2.text, "html.parser")
 
-#                 for li in li_elements:
-#                     div = li.find('div', class_='photo2_tit')
-#                     link = div.find('a')
-#                     href = link.get('href')
+                    # # 원하는 텍스트 추출
+                    # element = soup2.find("div", class_="detail_page ct")
+                    # if element:
+                    #     text = element.text.replace("\n", "")  # 토큰 줄이기 위한 개행 제거
+                    #     print(text)
+                    # else:
+                    #     print("페이지에서 'sub_content'를 찾을 수 없음")
 
-#                     href = href[1:]
-#                     href = ur + href
-#                     print(href)
+    # 다음 페이지가 있는지 확인
 
-#                     response1 = requests.get(href)  # URL 요청
+    # span 태그의 class="p next"의 하위인 a태그의 href 값 가져오기
+    next_page_element = soup.find('span', class_='p next')
+    if next_page_element:
+        next_page_link = next_page_element.find('a')
+        if next_page_link:
+            next_page_href = next_page_link.get('href')
 
-#                     # 2. 웹 페이지 내용 파싱
-#                     soup1 = BeautifulSoup(response1.text, "html.parser")
+            # 정규표현식을 사용하여 href에서 숫자 추출
+            next_page_number_match = re.search(r'\((\d+)\)', next_page_href)
+            if next_page_number_match:
+                next_page_number = int(next_page_number_match.group(1))
+                # print(f"다음 페이지 링크의 페이지 번호: {next_page_number}")
 
-#                     # 3. 원하는 텍스트 추출
-#                     element = soup1.find("div", class_="detail_page ct")
-#                     if element:
-#                         text = element.text.replace("\n", "")  # 토큰 줄이기 위한 개행 제거
-#                         # print(text)
-#                     else:
-#                         print("No 'sub_content' found on the page")
+                # current_page가 더 크면 종료
+                if current_page > next_page_number:
+                    print(f"현재 페이지({current_page})가 다음 페이지 번호({next_page_number})보다 큽니다. 종료합니다.")
+                    driver.quit()
+                    exit()
+                    break
+            else:
+                print("다음 페이지 링크의 페이지 번호를 찾을 수 없음")
 
-#         # 다음 페이지로 이동
-#         current_page += 1
+        else:
+            print("다음 페이지 링크를 찾을 수 없음")
 
-#     else:
-#         print(f'HTTP 요청에 실패했습니다. 상태 코드: {response.status_code}')
-#         break
+    current_page += 1
+
+# 웹 드라이버 종료
+driver.quit()
