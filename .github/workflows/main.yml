@@ -2,7 +2,7 @@ name: Daily Job
 
 on:
   schedule:
-    - cron: '20 14 * * *' 
+    - cron: '20 38 * * *' 
 
 jobs:
   run_job:
@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r ${{ github.workspace }}/requirements.txt
 
       - name: Run Python Script
         run: python geturl.py
