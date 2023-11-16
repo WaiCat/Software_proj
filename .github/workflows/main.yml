@@ -2,7 +2,7 @@ name: Daily Job
 
 on:
   schedule:
-    - cron: '13 51 * * *'  # 매일 22:20에 실행
+    - cron: '14 00 * * *'  # 매일 22:20에 실행
 
 jobs:
   run_job:
