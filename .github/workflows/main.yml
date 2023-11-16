@@ -22,4 +22,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Python Script
-        run: python path/to/your/geturl.py
+        run: python Software_proj/geturl.py
