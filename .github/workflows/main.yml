@@ -2,7 +2,7 @@ name: Daily Job
 
 on:
   schedule:
-    - cron: '13 43 * * *'  # 매일 22:20에 실행
+    - cron: '13 51 * * *'  # 매일 22:20에 실행
 
 jobs:
   run_job:
@@ -23,3 +23,5 @@ jobs:
 
       - name: Run Python Script
         run: python Software_proj/geturl.py
+      - name: View list
+        run: ls Software_proj/ # 현재 디렉토리의 파일 목록 출력
