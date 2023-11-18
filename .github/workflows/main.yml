@@ -2,12 +2,12 @@ name: Daily Job
 
 on:
   schedule:
-    - cron: '44 20 * * *' 
+    - cron: "14 00 * * *"
 
 jobs:
   run_job:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install -r ${{ github.workspace }}/requirements.txt
+          pip install -r Software_proj/.github/workflows/requirements.txt
 
       - name: Run Python Script
-        run: python geturl.py
+        run: python Software_proj/.github/workflows/geturl.py
