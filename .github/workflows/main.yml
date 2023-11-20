@@ -2,7 +2,7 @@ name: Daily Job
 
 on:
   schedule:
-    - cron: "14 05 * * *"
+    - cron: "18 05 * * *"
 
 jobs:
   run_job:
