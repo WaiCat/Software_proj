@@ -12,7 +12,7 @@ driver.get("https://young.busan.go.kr/policySupport/list.nm?menuCd=12")
 # 시작 페이지
 current_page = 0
 
-for _ in range(10):
+for _ in range(34):
     # 실행할 자바스크립트 함수 호출
     javascript_code = f"fn_page({current_page});"
 
@@ -28,6 +28,5 @@ for _ in range(10):
 
     current_page += 1
     
-
 # 웹 드라이버 종료
 driver.quit()
