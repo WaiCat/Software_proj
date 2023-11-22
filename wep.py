@@ -21,15 +21,15 @@ text = text + "여기에서 어떤정책인지, 지원 대상, 조건, 필요한
 # 4. 추출한 텍스트 활용
 print(text)
 
-# api_key = "api" #gpt api키 쓸때마다 돈듬...
-# question = text
+api_key = "api" #gpt api키 쓸때마다 돈듬...
+question = text
 
-# response = openai.Completion.create(
-#     engine="text-davinci-003", # gpt engine
-#     prompt=question,
-#     max_tokens=500,  # 원하는 답변 길이 설정
-#     api_key=api_key
-# )
+response = openai.Completion.create(
+    engine="text-davinci-003", # gpt engine
+    prompt=question,
+    max_tokens=500,  # 원하는 답변 길이 설정
+    api_key=api_key
+)
 
-# answer = response.choices[0].text
-# print(answer)
+answer = response.choices[0].text
+print(answer)

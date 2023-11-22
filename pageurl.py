@@ -9,7 +9,7 @@ driver = webdriver.Chrome()
 # 웹페이지 열기
 driver.get("https://young.busan.go.kr/policySupport/list.nm?menuCd=12")
 
-# 시작 페이지
+# 시작 페이지4
 current_page = 0
 
 while True:
@@ -40,6 +40,7 @@ while True:
 
             for li in li_elements:
                 # 웹 페이지 내용 파싱
+                # 모집 완료 게시글 필터링
                 spt_state_element = li.find('div', class_='spt_state end')
 
                 if spt_state_element is None:
@@ -66,16 +67,17 @@ while True:
 
                     response2 = requests.get(href)  # URL 요청
 
-                    # # 웹 페이지 내용 파싱
-                    # soup2 = BeautifulSoup(response2.text, "html.parser")
+                    # 웹 페이지 내용 파싱
+                    soup2 = BeautifulSoup(response2.text, "html.parser")
 
-                    # # 원하는 텍스트 추출
+                    # 원하는 텍스트 추출
                     # element = soup2.find("div", class_="detail_page ct")
-                    # if element:
-                    #     text = element.text.replace("\n", "")  # 토큰 줄이기 위한 개행 제거
-                    #     print(text)
-                    # else:
-                    #     print("페이지에서 'sub_content'를 찾을 수 없음")
+                    element = soup2.find("div", class_="dt_list")
+                    if element:
+                        text = element.text.replace("\n", "")  # 토큰 줄이기 위한 개행 제거
+                        print(text)
+                    else:
+                        print("페이지에서 'sub_content'를 찾을 수 없음")
 
     # 다음 페이지가 있는지 확인
 
