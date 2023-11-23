@@ -2,6 +2,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import pandas as pd
 
 # Chrome 브라우저를 실행
 driver = webdriver.Chrome()
@@ -12,7 +13,11 @@ driver.get("https://young.busan.go.kr/policySupport/list.nm?menuCd=12")
 # 시작 페이지4
 current_page = 0
 
-while True:
+# 빈 리스트 생성
+data_list = []
+
+# while True:
+for _ in range(3):
     # 실행할 자바스크립트 함수 호출
     javascript_code = f"fn_page({current_page});"
 
@@ -72,12 +77,39 @@ while True:
 
                     # 원하는 텍스트 추출
                     # element = soup2.find("div", class_="detail_page ct")
+                    policy_name_element = soup2.find('div', class_='dt_tit')
+                    policy_name = policy_name_element.get_text(strip=True) if policy_name_element else None
+                    
                     element = soup2.find("div", class_="dt_list")
+                    
                     if element:
-                        text = element.text.replace("\n", "")  # 토큰 줄이기 위한 개행 제거
-                        print(text)
-                    else:
-                        print("페이지에서 'sub_content'를 찾을 수 없음")
+                        dl_element = element.find('dl')
+
+                        if dl_element:
+                            # Extract all dt and dd elements
+                            dt_elements = dl_element.find_all('dt')
+                            dd_elements = dl_element.find_all('dd')
+
+                            row_data = {'정책이름': policy_name, '신청기간': None, '진행일정': None, '지원대상': None, '담당기관': None,
+                            '문의': None, '홈페이지': None, '조회수': None}
+
+                            # Iterate through the dt and dd elements and add them to the dictionary
+                            for dt, dd in zip(dt_elements, dd_elements):
+                                key = dt.get_text(strip=True)
+                                value = dd.get_text(strip=True)
+
+                                # Map each key to its corresponding column in the dictionary
+                                if key in row_data:
+                                    row_data[key] = value
+
+                            # Append the row_data dictionary to the data_list
+                            data_list.append(row_data)
+                    
+                    # if element:
+                    #     text = element.text.replace("\n", "")  # 토큰 줄이기 위한 개행 제거
+                    #     print(text)
+                    # else:
+                    #     print("페이지에서 'sub_content'를 찾을 수 없음")
 
     # 다음 페이지가 있는지 확인
 
@@ -107,6 +139,10 @@ while True:
             print("다음 페이지 링크를 찾을 수 없음")
 
     current_page += 1
+    
+df = pd.DataFrame(data_list)
+
+df.to_excel('C:\\Users\\Administrator\\Downloads\\software_study\\Software_proj\\output.xlsx', index=False)
 
 # 웹 드라이버 종료
 driver.quit()
