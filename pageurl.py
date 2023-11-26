@@ -75,7 +75,8 @@ while True:
                         
                     # 완성된 디렉토리 추가
                     data_list.append(row_data)
-
+                    
+    # 다음페이지 있는지 확인후 종료 코드
     next_page_element = soup.find('span', class_='p next')  # 다음 페이지가 있는지 확인
     if next_page_element:
         next_page_link = next_page_element.find('a')
