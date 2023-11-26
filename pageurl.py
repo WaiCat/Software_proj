@@ -40,24 +40,12 @@ while True:
                     href = base_url + link.get('href')[1:]  # 게시글 URL
                     print(href)
                     
-                    # # 다음페이지가 있는지 체크를 위한 정규표현식
-                    # page_number_match = re.search(r'\((\d+)\)', href)
-                    # if page_number_match:
-                    #     page_number = int(page_number_match.group(1))
-
-                    #     if current_page == page_number:
-                    #         print(f"현재 페이지: {current_page}, href의 페이지 번호: {page_number}")
-                    #     elif current_page > page_number:
-                    #         print(f"현재 페이지({current_page})가 href의 페이지 번호({page_number})보다 큽니다. 종료합니다.")
-                    #         driver.quit()
-                    #         exit()
-
                     response2 = requests.get(href)  # 게시글 URL 요청
                     soup2 = BeautifulSoup(response2.text, "html.parser")  # 게시글 내용 파싱
                     
                     # 현 게시글에 사용할 디렉토리
                     row_data = {'정책이름': None, '신청기간': None, '진행일정': None, '지원대상': None, '담당기관': None,
-                                        '문의': None, '홈페이지': None, '조회수': None, '상세정보': None}
+                                        '문의': None, '홈페이지': None, '상세정보': None}
 
                     policy_name_div = soup2.find('div', class_='dt_tit')  # 게시글 제목 div 불러오기
                     row_data['정책이름'] =  policy_name_div.get_text(strip=True) if policy_name_div else None # 제목 추출
@@ -75,13 +63,15 @@ while True:
                             # 디렉토리 값 설정
                             for dt, dd in zip(dt_elements, dd_elements):
                                 key = dt.get_text(strip=True)
+                                if key == '조회수' :
+                                    pass
                                 value = dd.get_text(strip=True)
 
                                 if key in row_data:
                                     row_data[key] = value
-
+                    
                     explain_div = soup2.find('div', class_='text')  # 게시글 상세살명 div 불러오기
-                    row_data['상세정보'] =  explain_div.get_text(strip=True)# 제목 추출
+                    row_data['상세정보'] = explain_div.get_text(strip=True) if explain_div else None # 상세설명 추출
                         
                     # 완성된 디렉토리 추가
                     data_list.append(row_data)
@@ -99,7 +89,6 @@ while True:
                 if current_page > next_page_number:
                     print(f"현재 페이지({current_page})가 다음 페이지 번호({next_page_number})보다 큽니다. 종료합니다.")
                     driver.quit()
-                    exit()
                     break
             else:
                 print("다음 페이지 링크의 페이지 번호를 찾을 수 없음")
