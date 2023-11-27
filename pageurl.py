@@ -100,6 +100,6 @@ while True:
     current_page += 1
 
 df = pd.DataFrame(data_list)
-df.to_excel('C:\\Users\\Administrator\\Downloads\\software_study\\Software_proj\\output.xlsx', index=False)
+df.to_excel('C:\\Users\\Administrator\\Downloads\\software_study\\Software_proj\\policy.xlsx', index=False)
 
 driver.quit()  # 웹 드라이버 종료
