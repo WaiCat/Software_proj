@@ -47,9 +47,9 @@ while True:
                     row_data = {'정책이름': None, '신청기간': None, '진행일정': None, '지원대상': None, '담당기관': None,
                                         '문의': None, '홈페이지': None, '상세정보': None}
 
-                    policy_name_div = soup2.find('div', class_='dt_tit')  # 게시글 제목 div 불러오기
+                    policy_name_div = soup2.find('div', class_='dt_tit') # 게시글 제목 div 불러오기
                     row_data['정책이름'] =  policy_name_div.get_text(strip=True) if policy_name_div else None # 제목 추출
-                    
+
                     summary_div = soup2.find("div", class_="dt_list") # 간략 설명 div 불러오기
 
                     #간략 설명에 있는 데이터 불러오기
@@ -67,15 +67,15 @@ while True:
                                     pass
                                 value = dd.get_text(strip=True)
 
-                                if key in row_data:
+                                if key in row_data :
                                     row_data[key] = value
                     
                     explain_div = soup2.find('div', class_='text')  # 게시글 상세살명 div 불러오기
                     row_data['상세정보'] = explain_div.get_text(strip=True) if explain_div else None # 상세설명 추출
-                        
+
                     # 완성된 디렉토리 추가
                     data_list.append(row_data)
-                    
+
     # 다음페이지 있는지 확인후 종료 코드
     next_page_element = soup.find('span', class_='p next')  # 다음 페이지가 있는지 확인
     if next_page_element:
