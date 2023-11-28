@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import pandas as pd
+import gpt
 
 # Chrome 브라우저 실행
 driver = webdriver.Chrome()
@@ -12,6 +13,7 @@ current_page = 0  # 시작 페이지
 data_list = []  # 빈 리스트 생성
 
 while True:
+# for _ in range(2):
     # 실행할 자바스크립트 함수 호출
     javascript_code = f"fn_page({current_page});"
     driver.execute_script(javascript_code)  # 자바스크립트 코드 실행
@@ -40,6 +42,8 @@ while True:
                     href = base_url + link.get('href')[1:]  # 게시글 URL
                     print(href)
                     
+                    chat = False
+                    
                     response2 = requests.get(href)  # 게시글 URL 요청
                     soup2 = BeautifulSoup(response2.text, "html.parser")  # 게시글 내용 파싱
                     
@@ -64,8 +68,10 @@ while True:
                             for dt, dd in zip(dt_elements, dd_elements):
                                 key = dt.get_text(strip=True)
                                 if key == '조회수' :
-                                    pass
+                                    continue
                                 value = dd.get_text(strip=True)
+                                if(value=='~'):
+                                    chat = True
 
                                 if key in row_data :
                                     row_data[key] = value
@@ -73,8 +79,18 @@ while True:
                     explain_div = soup2.find('div', class_='text')  # 게시글 상세살명 div 불러오기
                     row_data['상세정보'] = explain_div.get_text(strip=True) if explain_div else None # 상세설명 추출
 
+                    if chat:
+                        gpt_data = gpt.gpt(row_data)
+                        if gpt_data is not None:
+                            gpt_data['상세정보'] = row_data['상세정보']
+                            row_data = gpt_data
+                            
+                        
                     # 완성된 디렉토리 추가
                     data_list.append(row_data)
+                    
+                    df = pd.DataFrame(data_list)
+                    df.to_excel('C:\\Users\\Administrator\\Downloads\\software_study\\Software_proj\\policy.xlsx', index=False) 
 
     # 다음페이지 있는지 확인후 종료 코드
     next_page_element = soup.find('span', class_='p next')  # 다음 페이지가 있는지 확인
