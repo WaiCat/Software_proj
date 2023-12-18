@@ -11,7 +11,7 @@ def gpt(text):
     # 추출한 텍스트 활용
     print(text)
 
-    api_key = "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" #gpt api키 쓸때마다 돈듬...
+    api_key = "api" #gpt api키 쓸때마다 돈듬...
     question = text
 
     try:
